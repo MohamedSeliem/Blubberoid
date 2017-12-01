@@ -122,7 +122,7 @@ public class ChatAdapter extends ArrayAdapter<ChatMessage> {
             notifyDataSetChanged();
             return;
         }
-        view.animate().setStartDelay(FADE_TIMEOUT - elapsed).setDuration(1500).alpha(0)
+        view.animate().setStartDelay(FADE_TIMEOUT - elapsed).setDuration(5000).alpha(0)
                 .withEndAction(new Runnable() {
                     @Override
                     public void run() {
