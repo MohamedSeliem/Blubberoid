@@ -6,6 +6,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.hms.mohamedseliem.blubberoid.LoginActivity">
 
+
     <TextView
         android:text="@string/login"
         android:textSize="35sp"
@@ -22,7 +23,7 @@
         android:hint="@string/username"
         android:inputType="text"
         android:layout_width="match_parent"
-        android:layout_height="75dp"
+        android:layout_height="wrap_content"
         android:textSize="30sp"
         android:textColor="#333"
         android:gravity="center"
@@ -34,18 +35,17 @@
 
     <Button
         android:id="@+id/button"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:text="@string/login_submit"
-        android:textSize="25sp"
-        android:textColor="#FFF"
-        android:background="@color/pn_red"
-
-        android:onClick="joinChat"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/login_username"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="45dp" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="57dp"
+        android:background="@color/pn_red"
+        android:onClick="joinChat"
+        android:text="@string/login_submit"
+        android:textColor="#FFF"
+        android:textSize="20sp" />
 
 
 

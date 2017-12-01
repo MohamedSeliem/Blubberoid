@@ -35,9 +35,6 @@ import com.hms.mohamedseliem.blubberoid.adt.ChatUser;
 import com.hms.mohamedseliem.blubberoid.adt.HistoryItem;
 import com.hms.mohamedseliem.blubberoid.util.Constants;
 
-/**
- * Created by GleasonK on 7/31/15.
- */
 public class HistoryAdapter extends ArrayAdapter<HistoryItem> {
     private final Context context;
     private Pubnub mPubNub;

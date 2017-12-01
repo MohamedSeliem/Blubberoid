@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hms.mohamedseliem.blubberoid.adapters.HistoryAdapter;
+import com.hms.mohamedseliem.blubberoid.adt.ChatUser;
 import com.hms.mohamedseliem.blubberoid.adt.HistoryItem;
 import com.hms.mohamedseliem.blubberoid.util.Constants;
 import com.pubnub.api.Callback;
@@ -32,10 +33,12 @@ public class MainActivity extends AppCompatActivity {
     private String stdByChannel;
     private Pubnub mPubNub;
 
-    private ListView mHistoryList;
-    private HistoryAdapter mHistoryAdapter;
+    static private ListView mHistoryList;
+    static private HistoryAdapter mHistoryAdapter;
     private EditText mCallNumET;
     private TextView mUsernameTV;
+
+    static private ArrayList<HistoryItem> listItems=new ArrayList<HistoryItem>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         this.mUsernameTV.setText(this.username);
         initPubNub();
 
-        this.mHistoryAdapter = new HistoryAdapter(this, new ArrayList<HistoryItem>(), this.mPubNub);
+        this.mHistoryAdapter = new HistoryAdapter(this, listItems, this.mPubNub);
         this.mHistoryList.setAdapter(this.mHistoryAdapter);
     }
     @Override
@@ -154,6 +157,11 @@ public class MainActivity extends AppCompatActivity {
             showToast("Enter a valid user ID to call.");
             return;
         }
+        Long tsLong = System.currentTimeMillis()/1000;
+        ChatUser user=new ChatUser(mCallNumET.getText().toString(),"status");
+        HistoryItem item=new HistoryItem(user,tsLong);
+        listItems.add(item);
+        mHistoryAdapter.notifyDataSetChanged();
         dispatchCall(callNum);
     }
 
@@ -166,37 +174,45 @@ public class MainActivity extends AppCompatActivity {
      *   be invoked.
      * @param callNum Number to publish a call to.
      */
+
+    int i=1;
     public void dispatchCall(final String callNum){
         final String callNumStdBy = callNum + Constants.STDBY_SUFFIX;
-        this.mPubNub.hereNow(callNumStdBy, new Callback() {
-            @Override
-            public void successCallback(String channel, Object message) {
-                Log.d("MA-dC", "HERE_NOW: " +" CH - " + callNumStdBy + " " + message.toString());
-                try {
-                    int occupancy = ((JSONObject) message).getInt(Constants.JSON_OCCUPANCY);
-                    if (occupancy == 0) {
-                        showToast("User is not online!");
-                        //return;
-                    }
-                    JSONObject jsonCall = new JSONObject();
-                    jsonCall.put(Constants.JSON_CALL_USER, username);
-                    jsonCall.put(Constants.JSON_CALL_TIME, System.currentTimeMillis());
-                    mPubNub.publish(callNumStdBy, jsonCall, new Callback() {
-                        @Override
-                        public void successCallback(String channel, Object message) {
-                            Log.d("MA-dC", "SUCCESS: " + message.toString());
-                            Intent intent = new Intent(MainActivity.this, VideoChatActivity.class);
-                            intent.putExtra(Constants.USER_NAME, username);
-                            intent.putExtra(Constants.CALL_USER, callNum);  // Only accept from this number?
-                            intent.putExtra("dialed", true);
-                            startActivity(intent);
+
+            this.mPubNub.hereNow(callNumStdBy, new Callback() {
+                @Override
+                public void successCallback(String channel, Object message) {
+                        Log.d("MA-dC", "HERE_NOW: " + " CH - " + callNumStdBy + " " + message.toString());
+                        try {
+                           int occupancy = ((JSONObject) message).getInt(Constants.JSON_OCCUPANCY);
+                            if(occupancy!=0){
+                                showToast("User is not online!");
+                                return;
+                            }
+                            if (occupancy == 0) {
+                                JSONObject jsonCall = new JSONObject();
+                                jsonCall.put(Constants.JSON_CALL_USER, username);
+                                jsonCall.put(Constants.JSON_CALL_TIME, System.currentTimeMillis());
+                                mPubNub.publish(callNumStdBy, jsonCall, new Callback() {
+                                    @Override
+                                    public void successCallback(String channel, Object message) {
+                                        Log.d("MA-dC", "SUCCESS: " + message.toString());
+                                        Intent intent = new Intent(MainActivity.this, VideoChatActivity.class);
+                                        intent.putExtra(Constants.USER_NAME, username);
+                                        intent.putExtra(Constants.CALL_USER, callNum);  // Only accept from this number?
+                                        intent.putExtra("dialed", true);
+                                        startActivity(intent);
+                                    }
+                                });
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    });
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
                 }
-            }
-        });
+            });
+
     }
 
     /**

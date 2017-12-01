@@ -87,6 +87,7 @@ public class IncomingCallActivity extends Activity {
         intent.putExtra(Constants.CALL_USER, this.callUser);
         intent.putExtra("dialed",false);
         startActivity(intent);
+        finish();
     }
 
     /**
@@ -100,6 +101,7 @@ public class IncomingCallActivity extends Activity {
             public void successCallback(String channel, Object message) {
                 Intent intent = new Intent(IncomingCallActivity.this, MainActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
     }

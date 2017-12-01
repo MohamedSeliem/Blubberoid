@@ -5,7 +5,7 @@ android {
     buildToolsVersion "27.0.0"
     defaultConfig {
         applicationId "com.hms.mohamedseliem.blubberoid"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -42,8 +42,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:27.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.pubnub:pubnub-android:3.7.4'
-
     compile 'io.pristine:libjingle:9694@aar'
+    compile 'de.hdodenhof:circleimageview:2.2.0'
     testCompile 'junit:junit:4.12'
 }
 
