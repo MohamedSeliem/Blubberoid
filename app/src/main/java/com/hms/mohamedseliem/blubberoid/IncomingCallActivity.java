@@ -3,6 +3,7 @@ package com.hms.mohamedseliem.blubberoid;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +27,7 @@ public class IncomingCallActivity extends Activity {
 
     private Pubnub mPubNub;
     private TextView mCallerID;
+    MediaPlayer mediaPlayer ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +55,8 @@ public class IncomingCallActivity extends Activity {
         this.callUser = extras.getString(Constants.CALL_USER, "");
         this.mCallerID = (TextView) findViewById(R.id.caller_id);
         this.mCallerID.setText(this.callUser);
-
+        this.mediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.sound);
+        mediaPlayer.start();
         this.mPubNub  = new Pubnub(Constants.PUB_KEY, Constants.SUB_KEY);
         this.mPubNub.setUUID(this.username);
     }
@@ -82,6 +85,8 @@ public class IncomingCallActivity extends Activity {
     }
 
     public void acceptCall(View view){
+        mediaPlayer.release();
+        mediaPlayer = null;
         Intent intent = new Intent(IncomingCallActivity.this, VideoChatActivity.class);
         intent.putExtra(Constants.USER_NAME, this.username);
         intent.putExtra(Constants.CALL_USER, this.callUser);
@@ -95,6 +100,8 @@ public class IncomingCallActivity extends Activity {
      * @param view
      */
     public void rejectCall(View view){
+        mediaPlayer.release();
+        mediaPlayer = null;
         JSONObject hangupMsg = PeerConnectionClient.generateHangupPacket(this.username);
         this.mPubNub.publish(this.callUser,hangupMsg, new Callback() {
             @Override
